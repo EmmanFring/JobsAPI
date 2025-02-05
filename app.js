@@ -21,7 +21,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 app.get("/", (req, res) => {
-  res.send('<a href="http://www.localhost:8000/api-docs">Swagger API Docs</a>');
+  res.send('<a href="https://jobsapi-lfz8.onrender.com/api-docs">Swagger API Docs</a>');
 });
 
 app.use(usersRouter);
