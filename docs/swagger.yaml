@@ -52,13 +52,13 @@ paths:
     post:
       summary: Register a new user
       #
-      tags: [User]
+      tags: [user]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/user"
       responses:
         201:
           description: User registered successfully
@@ -68,7 +68,7 @@ paths:
   /login:
     post:
       summary: User login
-      tags: [User]
+      tags: [user]
       requestBody:
         required: true
         content:
