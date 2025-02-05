@@ -7,8 +7,10 @@ info:
   version: 1.0.0
 #the base url
 servers:
-  - url: http://localhost:8000
+  - url: http://localhost:3000
     description: Local server
+  - url: https://jobsapi-lfz8.onrender.com
+    description: Production server 
 #makeup of the api
 components:
   securitySchemes:

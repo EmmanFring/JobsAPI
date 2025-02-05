@@ -18,9 +18,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 //app.use(cors());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+
 app.get("/", (req, res) => {
-  res.send("WELCOME TO JOBBERMAN");
+  res.send('<a href="http://www.localhost:8000/api-docs">Swagger API Docs</a>');
 });
+
 app.use(usersRouter);
 // auth on the jobsrouter because we need permissions to manipulate jobs
 app.use(jobsRouter);
