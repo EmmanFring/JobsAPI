@@ -10,7 +10,7 @@ servers:
   - url: http://localhost:8000
     description: Local server
   - url: https://jobsapi-lfz8.onrender.com
-    description: Production server 
+    description: Production server
 #makeup of the api
 components:
   securitySchemes:
@@ -139,26 +139,6 @@ paths:
           description: Unauthorized
 
   /jobs/{id}:
-    get:
-      summary: Get a job by ID
-      tags: [jobs]
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-          description: Job ID
-      responses:
-        200:
-          description: Job found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Jobs"
-        404:
-          description: Job not found
-
     put:
       summary: Update a job
       tags: [jobs]
