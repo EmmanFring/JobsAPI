@@ -24,7 +24,7 @@ async function addJobs(req, res) {
 async function getJobsAddedByUser(req, res) {
   // id of person adding the jobs
   const { addedBy } = req.user;
-  console.log(addedBy);
+  // console.log(addedBy);
   try {
     const jobs = await Jobs.findAll({
       where: { addedBy },
@@ -36,7 +36,13 @@ async function getJobsAddedByUser(req, res) {
 }
 
 async function getJobs(req, res) {
+  const { id } = req.params;
   try {
+    if (id) {
+      const response = await Jobs.findOne({ where: { id } });
+      console.log(response);
+      return res.status(200).json({ response });
+    }
     const response = await Jobs.findAll();
     return res.status(200).json({ response });
   } catch (error) {
@@ -46,15 +52,30 @@ async function getJobs(req, res) {
 
 async function deleteJob(req, res) {
   const { id } = req.params;
+  const { addedBy } = req.user;
   const response = await Jobs.destroy({
-    where: { id },
+    where: { id, addedBy },
   });
+  if (!response) {
+    return res.status(403).json({ message: "Unauthorized to delete this job" });
+  }
+
   return res.status(200).json({ response });
 }
 
 async function updateJob(req, res) {
   const { title, description, company, salary } = req.body;
   const { id } = req.params;
+  const { addedBy } = req.user;
+
+  const job = await Jobs.findOne({ where: { id } });
+  if (!job) {
+    return res.status(404).json({ message: "Job not found" });
+  }
+
+  if (job.addedBy !== addedBy) {
+    return res.status(403).json({ message: "Unauthorized to update this job" });
+  }
   try {
     const response = await Jobs.update(
       {
@@ -67,11 +88,13 @@ async function updateJob(req, res) {
         where: { id },
       }
     );
-    console.log(id);
-    console.log(response);
+    if (!response)
+      return res
+        .status(403)
+        .json({ message: "Unauthorized or job not found 2" });
+
     return res.status(200).json({ response });
   } catch (error) {
-    console.log(error);
     res.status(500).send(error);
   }
 }

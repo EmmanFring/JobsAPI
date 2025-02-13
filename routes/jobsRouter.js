@@ -9,6 +9,7 @@ const {
   getJobs,
 } = require("../controllers/jobsController1");
 jobsRouter.get("/jobs", getJobs);
+jobsRouter.get("/jobs/:id", getJobs);
 jobsRouter.post("/jobs", auth, addJobs);
 jobsRouter.get("/user/jobs", auth, getJobsAddedByUser);
 // id is the job id from the models

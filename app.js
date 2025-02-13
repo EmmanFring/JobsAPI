@@ -6,8 +6,8 @@ const { usersRouter } = require("./routes/usersRouter");
 const { auth } = require("./middlewares/authMiddleware");
 const swaggerUi = require("swagger-ui-express");
 const { swaggerDocument } = require("./docs/swagger");
-
-const app = express();
+app = express()
+app.use(express.static('./public'));
 
 // models folder for the schema
 // database folder for the configuration to connect to the database
@@ -16,12 +16,13 @@ const app = express();
 // makes the data from your post/put request in a format that's easy to manipulate by devs
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-//app.use(cors());
+app.use(cors());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-
 app.get("/", (req, res) => {
-  res.send('<a href="https://jobsapi-lfz8.onrender.com/api-docs">Swagger API Docs</a>');
+  res.send(
+    '<a href="https://jobsapi-lfz8.onrender.com/api-docs">Swagger API Docs</a>'
+  );
 });
 
 app.use(usersRouter);

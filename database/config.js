@@ -2,11 +2,16 @@
 require("dotenv").config();
 const { Sequelize } = require("sequelize");
 const sequelizeConfig = new Sequelize(
-  process.env.databasep,
-  process.env.usernamep,
-  process.env.passwordp,
+  // process.env.databasep,
+  // process.env.usernamep,
+  // process.env.passwordp,
+
+  process.env.databased,
+  process.env.usernamed,
+  null,
+
   {
-    host: process.env.hostp,
+    host: process.env.hostd,
     dialect: "mysql",
     logging: false,
   }

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="head d-flex align-items-center justify-content-between">
+      <h4 class="welcome"></h4>
+      <h4 class="welcome">
+        <a class="text-decoration-none" href="welcome.html">Home</a>
+      </h4>
+      <h4 class="myLogOut" style="cursor: pointer">Logout</h4>
+    </div>
+    <hr />
+    <div>
+      <h2>Add Job</h2>
+      <form action="" id="myForm">
+        <input
+          type="text"
+          placeholder="Enter Job title"
+          name="title"
+          id="title"
+        />
+        <input
+          type="text"
+          placeholder="Enter Job description"
+          name="description"
+          id="description"
+        />
+        <input
+          type="text"
+          placeholder="Enter Job company"
+          name="company"
+          id="company"
+        />
+        <input
+          type="number"
+          placeholder="Enter Job salary"
+          name="salary"
+          id="salary"
+        />
+
+        <button type="submit">Add Job</button>
+      </form>
+    </div>
+    <hr />
+    <p class="text-danger"></p>
+    <h4 class="text-center">Jobs You Added</h4>
+    <ul class="jobs list-unstyled"></ul>
+
+    <script>
+      // jobs
+      const API_URLJ = "http://localhost:8000/jobs";
+      jobsContainer = document.querySelector(".jobs");
+      myLogOut = document.querySelector(".myLogOut");
+      const token = localStorage.getItem("token");
+      function printJobs(jobs) {
+        jobs.forEach((job) => {
+          li = document.createElement("li");
+          li.innerHTML = `<p><a class="text-decoration-none" href="detail.html?id=${job.addedBy}&title=${job.title}&description=${job.description}&company=${job.company}&salary=${job.salary}">${job.title} ${job.description} ${job.company} ${job.salary}</a></p>
+        
+        <button onclick="deleteJob(${job.id})">Delete</button> 
+        <button><a class="text-decoration-none" href="update.html?id=${job.id}&title=${job.title}&description=${job.description}&company=${job.company}&salary=${job.salary}">Update</a></button><hr>`;
+          jobsContainer.append(li);
+        });
+      }
+      myForm.addEventListener("submit", async function addJob(event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+        const title = document.getElementById("title").value;
+        const description = document.getElementById("description").value;
+        const company = document.getElementById("company").value;
+        const salary = document.getElementById("salary").value;
+        const job = {
+          title: title,
+          description: description,
+          company: company,
+          salary: salary,
+        };
+
+        try {
+          // Send the updated job data to the API using a PUT request
+          const response = await fetch(`${API_URLJ}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(job),
+          });
+          const data = await response.json();
+
+          if (!response.ok) {
+            p.textContent = `${data.message}!`;
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          alert("Job added successfully!");
+          window.location.href = "myjobs.html";
+        } catch (error) {
+          console.error("Error updating job:", error);
+        }
+      });
+      async function getJobs() {
+        response = await fetch(`http://localhost:8000/user/jobs`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        responseJson = await response.json();
+        jobsdata = responseJson.jobs;
+        printJobs(jobsdata);
+      }
+
+      myLogOut.addEventListener("click", function logOut(event) {
+        event.preventDefault();
+        localStorage.removeItem("token");
+        window.location.href = "index.html";
+      });
+      getJobs();
+
+      async function deleteJob(jobId) {
+        try {
+          const response = await fetch(`${API_URLJ}/${jobId}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          // see the upated state with the remaining jobs after deletion
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          window.location.reload();
+        } catch (error) {
+          console.error("Error deleting job:", error);
+        }
+      }
+      if (token) {
+        // const decodedToken = jwt_decode(token);
+        const welcome = document.querySelector(".welcome");
+        const myLogOut = document.querySelector(".myLogOut");
+        const API_URLU = "http://localhost:8000/user";
+
+        async function getUser() {
+          try {
+            // ✅ Ensure `decodedToken` has an `id`
+            if (!token) {
+              throw new Error("User ID not found in token");
+            }
+
+            const response = await fetch(`${API_URLU}`, {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const responseJson = await response.json();
+            welcome.innerHTML = `<h3>Welcome ${responseJson.user.email}</h3>`;
+          } catch (error) {
+            console.error("Error fetching user:", error);
+          }
+        }
+        getUser();
+      } else {
+        console.error("No token found in localStorage");
+      }
+    </script>
+  </body>
+</html>

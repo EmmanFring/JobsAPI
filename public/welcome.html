@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="head d-flex align-items-center justify-content-between">
+      <h4 class="welcome"></h4>
+      <h4 class="myJobs" style="cursor: pointer"><a href="myjobs.html">My Jobs</a></h4>
+      <h4 class="myLogOut" style="cursor: pointer">Logout</h4>
+    </div>
+    <hr />
+    <h4 class="text-center">Jobs Listing</h4>
+    <ul class="jobs list-unstyled"></ul>
+
+    <script>
+      // jobs
+      const API_URLJ = "http://localhost:8000/jobs";
+      jobsContainer = document.querySelector(".jobs");
+      myLogOut = document.querySelector(".myLogOut");
+
+      function printJobs(jobs) {
+        jobs.forEach((job) => {
+          li = document.createElement("li");
+          li.innerHTML = `<p>${job.title} ${job.description} ${job.company} ${job.salary}</p>
+          <hr>`;
+          jobsContainer.append(li);
+        });
+      }
+
+      async function getJobs() {
+        response = await fetch(API_URLJ);
+        responseJson = await response.json();
+        jobsdata = responseJson.response;
+        console.log(jobsdata);
+        printJobs(jobsdata);
+      }
+
+      myLogOut.addEventListener("click", function logOut(event) {
+        event.preventDefault();
+        localStorage.removeItem("token");
+        window.location.href = "index.html";
+      });
+      getJobs();
+
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        // const decodedToken = jwt_decode(token);
+        const welcome = document.querySelector(".welcome");
+        const myLogOut = document.querySelector(".myLogOut");
+        const API_URLU = "http://localhost:8000/user";
+
+        async function getUser() {
+          try {
+         
+            if (!token) {
+              throw new Error("User ID not found in token");
+            }
+
+            const response = await fetch(`${API_URLU}`, {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const responseJson = await response.json();
+            console.log(responseJson);
+            welcome.innerHTML = `<h3>Welcome ${responseJson.user.email}</h3>`;
+          } catch (error) {
+            console.error("Error fetching user:", error);
+          }
+        }
+        getUser();
+      } else {
+        console.error("No token found in localStorage");
+      }
+    </script>
+  </body>
+</html>

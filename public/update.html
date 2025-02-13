@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div>
+      <h4 class="welcome">
+        <a class="text-decoration-none text-centre" href="welcome.html">Home</a>
+      </h4>
+      <h2>Edit Job</h2>
+      <form action="" id="myForm">
+        <input
+          type="text"
+          placeholder="Enter Job title"
+          name="title"
+          id="title"
+        />
+        <input
+          type="text"
+          placeholder="Enter Job description"
+          name="description"
+          id="description"
+        />
+        <input
+          type="text"
+          placeholder="Enter Job company"
+          name="company"
+          id="company"
+        />
+        <input
+          type="number"
+          placeholder="Enter Job salary"
+          name="salary"
+          id="salary"
+        />
+
+        <button type="submit">Update Job</button>
+      </form>
+    </div>
+    <p class="text-danger"></p>
+    <script>
+      p = document.querySelector("p");
+      const API_URL = "http://localhost:8000/jobs";
+      const token = localStorage.getItem("token");
+      const urlParams = new URLSearchParams(window.location.search);
+
+      document.getElementById("title").value = urlParams.get("title");
+      document.getElementById("description").value =
+        urlParams.get("description");
+      document.getElementById("company").value = urlParams.get("company");
+      document.getElementById("salary").value = urlParams.get("salary");
+
+      const myForm = document.getElementById("myForm");
+      const jobId = urlParams.get("id");
+
+      myForm.addEventListener("submit", async function updateJob(event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+        const title = document.getElementById("title").value;
+        const description = document.getElementById("description").value;
+        const company = document.getElementById("company").value;
+        const salary = document.getElementById("salary").value;
+        const updatedJob = {
+          title: title,
+          description: description,
+          company: company,
+          salary: salary,
+        };
+
+        try {
+          // Send the updated job data to the API using a PUT request
+          const response = await fetch(`${API_URL}/${jobId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updatedJob),
+          });
+          const data = await response.json();
+
+          if (!response.ok) {
+            p.textContent = `${data.message}!`;
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          alert("Job updated successfully!");
+          window.location.href = "myjobs.html";
+        } catch (error) {
+          console.error("Error updating job:", error);
+        }
+      });
+    </script>
+  </body>
+</html>
